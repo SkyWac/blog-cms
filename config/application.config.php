@@ -15,7 +15,8 @@ return array(
         'ZfcUser',
         'ZfcUserDoctrineORM',
         'BjyAuthorize',
-        'SamUser'
+        'SamUser',
+        'Auth'
     ),
     'module_listener_options' => array(
         'module_paths' => array(
