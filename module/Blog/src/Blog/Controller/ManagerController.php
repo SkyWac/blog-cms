@@ -5,9 +5,14 @@ namespace Blog\Controller;
 use Zend\Mvc\Controller\AbstractActionController;
 use Zend\View\Model\ViewModel;
 use Zend\Mvc\MvcEvent;
+use Zend\Form\Annotation\AnnotationBuilder;
+
+use Blog\Entity\Blog as BlogEntity;
 
 class ManagerController extends AbstractActionController
 {
+    private $blogEntity,
+            $objectManager;
 
     /**
      * Attache les évènements
@@ -36,6 +41,11 @@ class ManagerController extends AbstractActionController
          /** Custom Layout **/
          $this->layout('blog/manager/layout.phtml');
 
+         /** AutoLoad Entity */
+         $this->blogEntity = new BlogEntity;
+
+         /** Entity Manager */
+        $this->objectManager = $this->getServiceLocator()->get('Doctrine\ORM\EntityManager');
     }
      
     /**
@@ -44,7 +54,28 @@ class ManagerController extends AbstractActionController
      */
     public function postDispatch (MvcEvent $e)
     {
+
+    }
+
+    public function createAction()
+    {
+        $builder = new AnnotationBuilder();
+        $form = $builder->createForm($this->blogEntity);
+
+        $request = $this->getRequest();
+        if ($request->isPost()){
+            $form->bind($this->blogEntity);
+            $form->setData($request->getPost());
+            if ($form->isValid()){
+                $data = $form->getData();
+                $data->ownerId = $this->zfcUserAuthentication()->getIdentity()->getId();
+                $this->blogEntity->attach($data);
+                $this->objectManager->persist($this->blogEntity);
+                $this->objectManager->flush();
+            }
+        }
          
+        return array('form'=>$form);
     }
 
     public function indexAction()
