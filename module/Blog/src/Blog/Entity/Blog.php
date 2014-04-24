@@ -86,4 +86,16 @@ class Blog
         }
     }
 
+    /**
+     * @return array
+     * Get an Entity Blog and returns a converted array of entity's attributes to parse it to the form
+     */
+
+    public function blogToArray($blog)
+    {
+        foreach($blog as $key => $value)
+            $arr[$key] = $value;
+        $arr['submit'] = 'Submit Changes';
+        return $arr;
+    }
 }

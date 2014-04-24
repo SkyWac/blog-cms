@@ -72,16 +72,44 @@ class ManagerController extends AbstractActionController
                 $this->blogEntity->attach($data);
                 $this->objectManager->persist($this->blogEntity);
                 $this->objectManager->flush();
+                $this->flashMessenger()->addMessage('<div class="alert alert-success">Your blog < '. $data->titre .' > has been created !<button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button></div>');
+                return $this->redirect()->toUrl('/manager');
             }
         }
          
-        return array('form'=>$form);
+        return array('form' => $form);
     }
 
     public function indexAction()
     {
-        return new ViewModel();
+        $blog = $this->objectManager->getRepository('Blog\Entity\Blog')->findAll();
+        return new ViewModel(array("blog" => $blog));
     }
 
+    public function editAction()
+    {
+        $blog = $this->objectManager->getRepository('Blog\Entity\Blog')->find($this->params()->fromRoute('id'));
+        $builder = new AnnotationBuilder;
+        $form = $builder->createForm($this->blogEntity);
+        $form->bind($this->blogEntity);
+        $form->setData($this->blogEntity->blogToArray($blog));
 
+        $req = $this->getRequest();
+        if($req->isPost()) {
+            $info = array_merge($this->blogEntity->blogToArray($blog), $this->blogEntity->blogToArray($req->getPost()));
+            $form->setData($info);
+            if($form->isValid()) {
+                $data = $form->getData();
+                $this->blogEntity->attach($info);
+                $this->objectManager->merge($this->blogEntity);
+                $this->objectManager->flush();
+                $this->flashMessenger()->addMessage('<div class="alert alert-success">Your blog < '. $data->titre .' > has been updated !<button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button></div>');
+                return $this->redirect()->toUrl('/manager');
+            }
+        }
+
+        $view = new ViewModel(array('blog' => $blog, 'form' => $form));
+        $view->setTerminal(true);
+        return $view;
+    }
 }
