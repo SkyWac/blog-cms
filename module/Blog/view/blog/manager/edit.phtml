@@ -27,6 +27,15 @@ $online = $blog->online ? 'success' : 'danger';
 					echo $this->formCollection($form);
 					echo $this->form()->closeTag();
 
-                ?>
+                ?><br>
+                <a type="button" id="blogRemove" href="manager/remove/<?= $blog->id; ?>" class="btn btn-danger btn-block">Remove this blog</a>
+
               </div>
 </div>
+
+<script type="text/javascript">
+	$("#blogRemove").click(function(){
+		if(!confirm('Voulez vous coucher avec moi ?'))
+			return false;
+	})
+</script>

@@ -35,7 +35,7 @@ class Blog
      * @Annotation\Required({"required":"true"})
      * @Annotation\Filter({"name":"StripTags"})
      * @Annotation\Validator({"name":"StringLength", "options":{"min":"5"}})
-     * @Annotation\Options({"label":"Blog Name:"})
+     * @Annotation\Options({"label":"Blog Name:", "id":"titre"})
      */
     public $titre;
 
@@ -52,6 +52,25 @@ class Blog
     public $description;
 
     /**
+     * @var string
+     * @ORM\Column(type="string", nullable=false)
+     * @Annotation\Type("Zend\Form\Element\Text")
+     * @Annotation\Required({"required":"true"})
+     * @Annotation\Filter({"name":"StripTags"})
+     * @Annotation\Validator({"name":"regex", 
+     * "options":{
+     *   "pattern":"/^[a-z]+(\-[a-z]+)*$/",
+     *   "messages":{
+     *       "regexInvalid":"The regex is not correct",
+     *       "regexNotMatch": "The slug is invalid",
+     *       "regexErrorous": "Dunno what happened"
+     *   }
+     * }})
+     * @Annotation\Options({"label":"Slug:"})
+     */
+    public $slug;
+
+    /**
      * @var boolean
      * @ORM\Column(type="boolean", nullable=false)
      * @Annotation\Type("Zend\Form\Element\Radio")
@@ -61,7 +80,7 @@ class Blog
      *                      "value_options" : {"0":"Offline","1":"Online"},
      *                      "class" : "form-control"})
      */
-    public $online; 
+    public $online;
 
     /**
      * @var int

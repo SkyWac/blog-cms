@@ -18,3 +18,10 @@ echo $this->form()->closeTag();
 
 
 ?>
+<script type="text/javascript">
+	var $titre = $("input[name$='titre']");
+	var $slug = $("input[name$='slug']");
+	$titre.on('keyup', function() {
+		$slug.val($titre.val().replace(/ /g, "-"));
+	})
+</script>

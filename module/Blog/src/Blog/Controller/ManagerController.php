@@ -82,13 +82,19 @@ class ManagerController extends AbstractActionController
 
     public function indexAction()
     {
-        $blog = $this->objectManager->getRepository('Blog\Entity\Blog')->findAll();
+        $blog = $this->objectManager->getRepository('Blog\Entity\Blog')->findBy(array("ownerId" => $this->zfcUserAuthentication()->getIdentity()->getId()));
         return new ViewModel(array("blog" => $blog));
     }
 
     public function editAction()
     {
         $blog = $this->objectManager->getRepository('Blog\Entity\Blog')->find($this->params()->fromRoute('id'));
+
+        if($blog->ownerId != $this->zfcUserAuthentication()->getIdentity()->getId()) {
+            $this->flashMessenger()->addMessage('<div class="alert alert-danger">This blog is not your !<button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button></div>');
+            return $this->redirect()->toUrl('/manager');   
+        }
+
         $builder = new AnnotationBuilder;
         $form = $builder->createForm($this->blogEntity);
         $form->bind($this->blogEntity);
